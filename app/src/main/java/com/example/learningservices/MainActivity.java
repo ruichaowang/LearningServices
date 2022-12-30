@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = "wrc_app_0";
     LocalService mLocalService;
     boolean mBound = false;
+    int result;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,15 @@ public class MainActivity extends AppCompatActivity {
 
     /** 远程 library 的服务 */
     private RemoteService_aidl m_RemoteService;
+    private IProcessStateListener m_IProcessStateListener = new IProcessStateListener.Stub() {
+        @Override
+        public void onProcessFinished(int num) throws RemoteException {
+            result = num;
+            Log.i(TAG,"得到随机数为" + result);
+
+        }
+    };
+
     private void initRemoteService() {
         Intent intent_remote = new Intent(this, RemoteService_Impl.class);
         bindService(intent_remote, mConnection_remote, Context.BIND_AUTO_CREATE);// 绑定远程服务
@@ -64,12 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
             // 需要保证 connect 后再执行回调的注册
             try {
-                m_RemoteService.registerListener(new IProcessStateListener.Stub() {
-                    @Override
-                    public void onProcessFinished(int num) throws RemoteException {
-                        Log.i(TAG,"得到随机数为" + num);
-                    }
-                });
+                m_RemoteService.registerListener(m_IProcessStateListener);
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -84,11 +89,17 @@ public class MainActivity extends AppCompatActivity {
 
 
     /** 按钮的实现 */
-    // 怎么才能让点击按钮后才启动呢？
+
+
     public void onButtonClick_connect(View v) throws RemoteException {
-        initRemoteService();
+        initRemoteService();       // 注册回调
     }
     public void onButtonClick_disconnect(View v) throws RemoteException {
+        try {
+            m_RemoteService.unregisterListener(m_IProcessStateListener);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
         unbindService(mConnection_remote);
     }
 

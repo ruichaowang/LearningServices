@@ -8,58 +8,58 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="316dp"
+        android:layout_height="76dp"
         android:layout_marginStart="70dp"
+        android:layout_marginTop="147dp"
         android:layout_marginEnd="70dp"
-        android:layout_marginBottom="37dp"
-        android:text="Disconnect_server"
         android:onClick="onButtonClick_disconnect"
-        app:layout_constraintBottom_toTopOf="@+id/button5"
+        android:text="Disconnect_server以及注销回调"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button3" />
 
     <Button
         android:id="@+id/button3"
-        android:layout_width="234dp"
-        android:layout_height="0dp"
-        android:layout_marginBottom="17dp"
+        android:layout_width="302dp"
+        android:layout_height="73dp"
+        android:layout_marginTop="146dp"
+        android:layout_marginEnd="56dp"
         android:onClick="onButtonClick_connect"
-        android:text="Connect_server"
+        android:text="Connect_server 注册回调"
         app:layout_constraintBottom_toTopOf="@+id/button"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button2" />
+        app:layout_constraintTop_toBottomOf="@+id/button2"
+        app:layout_constraintVertical_bias="0.5" />
 
     <Button
         android:id="@+id/button5"
-        android:layout_width="328dp"
-        android:layout_height="0dp"
+        android:layout_width="350dp"
+        android:layout_height="70dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="388dp"
+        android:layout_marginStart="41dp"
+        android:layout_marginTop="147dp"
+        android:layout_marginEnd="41dp"
         android:onClick="onButtonClick_getRandomNumber_immediately"
         android:text="立即获取远程服务器的随机数"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button" />
 
     <Button
         android:id="@+id/button2"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="366dp"
+        android:layout_height="72dp"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="48dp"
-        android:layout_marginTop="81dp"
         android:layout_marginEnd="48dp"
-        android:layout_marginBottom="16dp"
         android:onClick="onButtonClick"
         android:text="本地获取一个一百以内的随机数"
         app:layout_constraintBottom_toTopOf="@+id/button3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.5" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

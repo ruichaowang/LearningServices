@@ -15,14 +15,14 @@ public class RemoteService_Impl extends Service {
     private static final String TAG = "wrc_library_remote";
     private final Random mGenerator = new Random();
     private IProcessStateListener mProcessStateListener;
-    private boolean isServiceDestroy = false; //当前服务是否结束
+    private boolean isServiceDestroy = false;                //当前服务是否结束
+    Thread thread1 = new Thread(new ServiceWorker());       // 随机数生成
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        // 随机数生成
-        new Thread(new ServiceWorker()).start();
+        thread1.start();
         Log.i(TAG, "onCreate， 开启随机数生成");
     }
 
@@ -91,6 +91,7 @@ public class RemoteService_Impl extends Service {
         @Override
         public void unregisterListener(IProcessStateListener listener) throws RemoteException {
             remoteCallbackList.unregister(listener);
+            Log.i(TAG, "接口注销完成");
         }
     };
 
