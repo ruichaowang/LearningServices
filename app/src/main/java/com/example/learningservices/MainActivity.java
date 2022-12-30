@@ -15,11 +15,12 @@ import android.widget.Toast;
 
 import com.example.wrclibrary.RemoteService_Impl;
 import com.example.wrclibrary.RemoteService_aidl;
+import com.example.wrclibrary.IProcessStateListener;
 
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "wrc_app_0";
-    LocalService mService;
+    LocalService mLocalService;
     boolean mBound = false;
 
     @Override
@@ -35,9 +36,6 @@ public class MainActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, LocalService.class);
         bindService(intent, connection, Context.BIND_AUTO_CREATE);// 绑定本地服务
-
-        Intent intent_remote = new Intent(this, RemoteService_Impl.class);
-        bindService(intent_remote, mConnection_remote, Context.BIND_AUTO_CREATE);// 绑定远程服务
     }
 
     @Override
@@ -51,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
 
     /** 远程 library 的服务 */
     private RemoteService_aidl m_RemoteService;
+    private void initRemoteService() {
+        Intent intent_remote = new Intent(this, RemoteService_Impl.class);
+        bindService(intent_remote, mConnection_remote, Context.BIND_AUTO_CREATE);// 绑定远程服务
+    }
+
     private ServiceConnection mConnection_remote = new ServiceConnection() {
         // Called when the connection with the service is established
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -58,6 +61,18 @@ public class MainActivity extends AppCompatActivity {
             // Following the example above for an AIDL interface,
             // this gets an instance of the IRemoteInterface, which we can use to call on the service
             m_RemoteService = RemoteService_aidl.Stub.asInterface(service);
+
+            // 需要保证 connect 后再执行回调的注册
+            try {
+                m_RemoteService.registerListener(new IProcessStateListener.Stub() {
+                    @Override
+                    public void onProcessFinished(int num) throws RemoteException {
+                        Log.i(TAG,"得到随机数为" + num);
+                    }
+                });
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
 
         // Called when the connection with the service disconnects unexpectedly
@@ -67,17 +82,21 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
     /** 按钮的实现 */
-    public void onButtonClick_Remote(View v) throws RemoteException {
-        int num =  m_RemoteService.getPid();
-        Toast.makeText(this, "pid = " + num, Toast.LENGTH_SHORT).show();
+    // 怎么才能让点击按钮后才启动呢？
+    public void onButtonClick_connect(View v) throws RemoteException {
+        initRemoteService();
+    }
+    public void onButtonClick_disconnect(View v) throws RemoteException {
+        unbindService(mConnection_remote);
     }
 
-    public void onButtonClick_remote_random(View v) throws RemoteException {
-        int num =  m_RemoteService.getRandomNumber_remote();
+    public void onButtonClick_getRandomNumber_immediately(View v) throws RemoteException {
+
+        int num =  m_RemoteService.getRandomNumber_immediately();
         Toast.makeText(this, "随机数 = " + num, Toast.LENGTH_SHORT).show();
     }
-
 
 
     /** Called when a button is clicked (the button in the layout file attaches to
@@ -87,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             // Call a method from the LocalService.
             // However, if this call were something that might hang, then this request should
             // occur in a separate thread to avoid slowing down the activity performance.
-            int num = mService.getRandomNumber();
+            int num = mLocalService.getRandomNumber();
             Toast.makeText(this, "本地获取随机数 = " + num, Toast.LENGTH_SHORT).show();
         }
     }
@@ -100,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
                                        IBinder service) {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             LocalService.LocalBinder binder = (LocalService.LocalBinder) service;
-            mService = binder.getService();
+            mLocalService = binder.getService();
             mBound = true;
         }
 
